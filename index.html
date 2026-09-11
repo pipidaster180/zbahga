@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>D0CS GLAZ — Реферальная система</title>
+<style>
+:root{
+  --gold:#f5c542;
+  --gold2:#ffe08a;
+  --gold3:#b98213;
+  --bg:#070706;
+  --line:rgba(245,197,66,.20);
+  --muted:#9c9685;
+  --text:#fffaf0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  min-height:100vh;
+  color:var(--text);
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  display:flex;
+  justify-content:center;
+  padding:34px 16px 60px;
+  overflow-x:hidden;
+  background:
+    radial-gradient(circle at 50% -10%,rgba(245,197,66,.20),transparent 34%),
+    radial-gradient(circle at 0 70%,rgba(184,130,19,.09),transparent 30%),
+    radial-gradient(circle at 100% 80%,rgba(245,197,66,.07),transparent 28%),
+    var(--bg);
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.25;
+  background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:38px 38px;
+  mask-image:linear-gradient(to bottom,#000,transparent 90%);
+}
+.shell{width:100%;max-width:620px;position:relative;z-index:1}
+.brand{text-align:center;margin-bottom:26px}
+.brand-mark{
+  width:82px;height:82px;margin:0 auto 16px;border-radius:24px;
+  display:grid;place-items:center;
+  background:linear-gradient(145deg,#fff2ae 0%,var(--gold) 45%,#b9780d 100%);
+  box-shadow:0 0 0 1px rgba(255,224,138,.5),0 16px 50px rgba(245,197,66,.18),inset 0 2px 0 rgba(255,255,255,.6);
+  animation:float 4s ease-in-out infinite;
+  overflow:hidden;
+}
+.brand-mark img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+@keyframes float{50%{transform:translateY(-5px)}}
+h1{
+  font-size:31px;font-weight:900;letter-spacing:2px;
+  background:linear-gradient(90deg,#fff4bd,var(--gold),#fff4bd);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  margin-bottom:7px;
+}
+.subtitle{font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--muted)}
+.tabs{
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;width:100%;
+  padding:6px;margin-bottom:15px;border:1px solid var(--line);
+  background:rgba(13,12,9,.78);border-radius:18px;box-shadow:0 12px 35px rgba(0,0,0,.35);
+}
+.tab{
+  border:1px solid transparent;background:transparent;color:#aaa28e;
+  padding:14px 6px;border-radius:13px;font-size:12px;font-weight:800;
+  letter-spacing:.3px;cursor:pointer;transition:.25s;text-align:center;
+}
+.tab:hover{color:var(--gold2);background:rgba(245,197,66,.06)}
+.tab.active{
+  color:#171207;border-color:rgba(255,235,160,.65);
+  background:linear-gradient(135deg,#fff0a5 0%,var(--gold) 55%,#c88a16 100%);
+  box-shadow:0 8px 22px rgba(245,197,66,.17),inset 0 1px rgba(255,255,255,.7);
+}
+.card{
+  width:100%;padding:28px;border-radius:24px;
+  background:linear-gradient(145deg,rgba(29,26,17,.92),rgba(11,10,8,.94));
+  border:1px solid var(--line);
+  box-shadow:0 25px 70px rgba(0,0,0,.55),inset 0 1px rgba(255,255,255,.035);
+  position:relative;overflow:hidden;
+  animation:cardIn .35s ease;
+}
+.card:before{
+  content:"";position:absolute;left:18%;right:18%;top:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);opacity:.75;
+}
+@keyframes cardIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+.hidden{display:none}
+.tag{
+  display:inline-flex;align-items:center;gap:7px;
+  background:rgba(245,197,66,.10);color:var(--gold2);
+  border:1px solid rgba(245,197,66,.25);font-size:10px;font-weight:900;
+  padding:7px 10px;border-radius:999px;margin-bottom:13px;letter-spacing:1px;
+}
+.tag:before{content:"";width:5px;height:5px;border-radius:50%;background:var(--gold);box-shadow:0 0 9px var(--gold)}
+.tag.red{background:rgba(255,80,80,.08);color:#ff9c9c;border-color:rgba(255,80,80,.22)}
+.tag.red:before{background:#ff6666;box-shadow:0 0 9px #ff6666}
+.tag.green{background:rgba(54,190,111,.08);color:#7ff0a8;border-color:rgba(54,190,111,.22)}
+.tag.green:before{background:#4dff88;box-shadow:0 0 9px #4dff88}
+.info-text{color:#d5cfbe;font-size:14px;line-height:1.75}
+.info-text b{color:var(--gold2)}
+label{
+  display:block;font-size:11px;font-weight:800;color:#aaa28e;
+  text-transform:uppercase;letter-spacing:1px;margin:20px 0 8px;
+}
+input{
+  width:100%;height:54px;background:rgba(4,4,3,.72);
+  border:1px solid rgba(255,255,255,.09);color:#fff9e8;
+  padding:0 16px;border-radius:14px;font-size:15px;outline:none;
+  transition:.25s;box-shadow:inset 0 1px 5px rgba(0,0,0,.25);
+}
+input:hover{border-color:rgba(245,197,66,.25)}
+input:focus{border-color:rgba(245,197,66,.7);box-shadow:0 0 0 4px rgba(245,197,66,.07),0 0 22px rgba(245,197,66,.08)}
+input::placeholder{color:#5f5a4e}
+.btn{
+  width:100%;height:56px;margin-top:22px;border:0;border-radius:15px;
+  color:#171207;background:linear-gradient(135deg,#fff0a5,var(--gold) 52%,#c48612);
+  font-size:14px;font-weight:900;letter-spacing:.7px;text-transform:uppercase;
+  cursor:pointer;transition:.25s;box-shadow:0 12px 30px rgba(245,197,66,.16),inset 0 1px rgba(255,255,255,.75);
+}
+.btn:hover{transform:translateY(-2px);box-shadow:0 17px 35px rgba(245,197,66,.23),0 0 24px rgba(245,197,66,.10)}
+.btn:active{transform:translateY(0)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
+.btn.green{
+  background:linear-gradient(135deg,#a5ffc8,#36be6f 52%,#0d7a3e);
+  color:#041a0d;
+}
+.btn.green:hover{box-shadow:0 17px 35px rgba(54,190,111,.23),0 0 24px rgba(54,190,111,.10)}
+.success,.error{
+  margin-top:16px;padding:15px;border-radius:14px;font-size:13px;text-align:center;
+  font-weight:800;line-height:1.55;animation:cardIn .25s ease;
+}
+.success{background:rgba(54,190,111,.08);border:1px solid rgba(54,190,111,.25);color:#7ff0a8}
+.error{background:rgba(255,70,70,.08);border:1px solid rgba(255,70,70,.25);color:#ff9a9a}
+.highlight,.danger{
+  padding:16px 17px;border-radius:15px;margin:14px 0;
+  font-size:13px;line-height:1.7;
+}
+.highlight{
+  background:linear-gradient(135deg,rgba(245,197,66,.07),rgba(245,197,66,.025));
+  border:1px solid rgba(245,197,66,.13);
+  border-left:3px solid var(--gold);color:#d8d1bf;
+}
+.danger{
+  background:rgba(255,65,65,.055);border:1px solid rgba(255,65,65,.13);
+  border-left:3px solid #ff5555;color:#e7b0b0;
+}
+.highlight b{color:var(--gold2)}
+.danger b{color:#ff8d8d}
+.balance-box{
+  text-align:center;padding:24px 16px;border-radius:18px;
+  background:linear-gradient(145deg,rgba(245,197,66,.08),rgba(245,197,66,.02));
+  border:1px solid rgba(245,197,66,.18);margin:16px 0;
+}
+.balance-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px}
+.balance-value{
+  font-size:46px;font-weight:900;line-height:1;
+  background:linear-gradient(90deg,#fff4bd,var(--gold),#fff4bd);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.balance-sub{font-size:12px;color:#8a8375;margin-top:8px}
+@media(max-width:520px){
+  body{padding:24px 12px 40px}
+  .brand{margin-bottom:20px}
+  .brand-mark{width:70px;height:70px;border-radius:20px;font-size:32px}
+  h1{font-size:26px}
+  .card{padding:21px 17px;border-radius:20px}
+  .tab{font-size:10.5px;padding:12px 4px;letter-spacing:0}
+  .balance-value{font-size:38px}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <div class="brand">
+    <div class="brand-mark">
+      <img src="kazax.jpg" alt="D0CS GLAZ">
+    </div>
+    <h1>D0CS GLAZ</h1>
+    <div class="subtitle">Реферальная система</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('ref')">Рефер</div>
+    <div class="tab" onclick="switchTab('become')">Стать рефером</div>
+    <div class="tab" onclick="switchTab('withdraw')">Вывести</div>
+  </div>
+
+  <!-- РЕФЕР -->
+  <div class="card" id="tab-ref">
+    <span class="tag">РЕФЕР</span>
+    <div class="info-text">
+      Укажи, <b>от кого ты пришёл</b>. Если ты зашёл по чьей-то ссылке — впиши его ник.
+    </div>
+
+    <label>Ник рефера (обязательно)</label>
+    <input id="refNick" placeholder="например: xxODER" autocomplete="off">
+
+    <button class="btn" id="refBtn" onclick="submitRef()">Отправить</button>
+    <div class="success hidden" id="refSuccess">
+      ✅ Успешно!<br>Вы можете пользоваться ботом!
+    </div>
+    <div class="error hidden" id="refError">
+      ❌ Ошибка отправки. Попробуй ещё раз.
+    </div>
+  </div>
+
+  <!-- СТАТЬ РЕФЕРОМ -->
+  <div class="card hidden" id="tab-become">
+    <span class="tag red">СТАТЬ РЕФЕРОМ</span>
+    <div class="info-text">
+      Привет! Ты хочешь стать рефером и зарабатывать с доксеров? Вот в чём плоды с реферов:
+    </div>
+
+    <div class="highlight">
+      Первое — когда вы принесли к нам бота человека и когда он покупает что-то за <b>300 рублей</b> (смс бомбер, пробив) — то вы получите <b>80 звёзд</b> за него. И это очень выгодно!
+    </div>
+
+    <div class="highlight">
+      Один человек из команды приводил в день по <b>300 юзеров</b>, делая рассылку в чаты — и зарабатывал немерено!
+    </div>
+
+    <span class="tag red">ПРАВИЛА</span>
+    <div class="danger">
+      <b>Что нельзя делать:</b><br>
+      Первое — нельзя скамить людей из команды/тимы. Если вы скамните кого-то или зашантажируете из тимы людей — то вас выгонят из тимы, и если у вас будут какие-то звёзды у нас на банке, то мы вам их не отдадим обратно.
+    </div>
+
+    <span class="tag">В ЧЁМ НАШ СМЫСЛ</span>
+    <div class="highlight">
+      И вы думаете, что мы раздаём звёзды? Всё не так. Когда человек покупает за 300 рублей что-то — нам передаётся чистыми <b>280</b> (комиссия). Мы покупаем за <b>100 рублей</b> звёзды, скидываем по вашему юзу. У нас выходит чистые <b>180</b>.
+    </div>
+
+    <label>Юз (обязательно)</label>
+    <input id="becomeUser" placeholder="@username" autocomplete="off">
+
+    <label>Свой ник / псевдоним (обязательно)</label>
+    <input id="becomeNick" placeholder="например: xxODER" autocomplete="off">
+
+    <button class="btn" id="becomeBtn" onclick="submitBecome()">Отправить</button>
+    <div class="success hidden" id="becomeSuccess">
+      ✅ Успешно!<br>Вы можете пользоваться ботом!
+    </div>
+    <div class="error hidden" id="becomeError">
+      ❌ Ошибка отправки. Попробуй ещё раз.
+    </div>
+  </div>
+
+  <!-- ВЫВЕСТИ -->
+  <div class="card hidden" id="tab-withdraw">
+    <span class="tag green">ВЫВОД СРЕДСТВ</span>
+    <div class="info-text">
+      Введи свой <b>юз</b> и <b>ник</b>, чтобы посмотреть, сколько ты заработал. Если всё верно — нажми «Запросить вывод», и мы отправим звёзды.
+    </div>
+
+    <label>Юз (обязательно)</label>
+    <input id="withdrawUser" placeholder="@username" autocomplete="off">
+
+    <label>Свой ник / псевдоним (обязательно)</label>
+    <input id="withdrawNick" placeholder="например: xxODER" autocomplete="off">
+
+    <button class="btn" id="withdrawCheckBtn" onclick="checkBalance()">Проверить баланс</button>
+
+    <!-- Блок с балансом (скрыт) -->
+    <div class="balance-box hidden" id="balanceBox">
+      <div class="balance-label">Твой баланс</div>
+      <div class="balance-value"><span id="balanceAmount">0</span> ⭐</div>
+      <div class="balance-sub">Звёзды можно вывести на свой аккаунт</div>
+      <button class="btn green" id="withdrawBtn" onclick="requestWithdraw()">Запросить вывод</button>
+      <div class="success hidden" id="withdrawSuccess">
+        ✅ Заявка на вывод отправлена!<br>Ожидай зачисления звёзд.
+      </div>
+    </div>
+
+    <div class="error hidden" id="withdrawError">
+      ❌ Не удалось найти твой профиль. Проверь юз и ник.
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const WEBHOOK_URL = "https://discord.com/api/webhooks/1540918316368142499/ZZdE7aFwhelf9K-tHhM4LMLqYmYgLX2noI-NF_m1OymIHBvgXoFeEF8z5u0tMXrFMd8E";
+
+  // --- Авто-@ для всех полей с юзом ---
+  ['becomeUser', 'withdrawUser'].forEach(id => {
+    document.getElementById(id).addEventListener('input', function () {
+      let v = this.value;
+      if (v.length > 0 && v[0] !== '@') this.value = '@' + v;
+    });
+  });
+
+  function switchTab(name) {
+    document.querySelectorAll('.tab').forEach((t, i) => {
+      const map = ['ref', 'become', 'withdraw'];
+      t.classList.toggle('active', map[i] === name);
+    });
+    document.getElementById('tab-ref').classList.toggle('hidden', name !== 'ref');
+    document.getElementById('tab-become').classList.toggle('hidden', name !== 'become');
+    document.getElementById('tab-withdraw').classList.toggle('hidden', name !== 'withdraw');
+  }
+
+  async function sendToDiscord(content) {
+    const res = await fetch(WEBHOOK_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username: "D0CS GLAZ", content })
+    });
+    if (!res.ok) throw new Error("Discord webhook error");
+    return true;
+  }
+
+  // --- РЕФЕР ---
+  async function submitRef() {
+    const nick = document.getElementById('refNick').value.trim();
+    const btn = document.getElementById('refBtn');
+    const ok = document.getElementById('refSuccess');
+    const err = document.getElementById('refError');
+
+    ok.classList.add('hidden');
+    err.classList.add('hidden');
+
+    if (!nick) { alert('Введи ник рефера!'); return; }
+
+    btn.disabled = true;
+    btn.textContent = 'Отправка...';
+
+    try {
+      await sendToDiscord(`⭐ **НОВЫЙ РЕФЕР**\n**Ник рефера:** \`${nick}\``);
+      ok.classList.remove('hidden');
+      document.getElementById('refNick').value = '';
+    } catch (e) {
+      err.classList.remove('hidden');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Отправить';
+    }
+  }
+
+  // --- СТАТЬ РЕФЕРОМ ---
+  async function submitBecome() {
+    const user = document.getElementById('becomeUser').value.trim();
+    const nick = document.getElementById('becomeNick').value.trim();
+    const btn = document.getElementById('becomeBtn');
+    const ok = document.getElementById('becomeSuccess');
+    const err = document.getElementById('becomeError');
+
+    ok.classList.add('hidden');
+    err.classList.add('hidden');
+
+    if (!user || !nick) { alert('Заполни юз и свой ник!'); return; }
+
+    const userFinal = user.startsWith('@') ? user : '@' + user;
+
+    btn.disabled = true;
+    btn.textContent = 'Отправка...';
+
+    try {
+      await sendToDiscord(`🔥 **НОВЫЙ РЕФЕР В КОМАНДУ**\n**Юз:** \`${userFinal}\`\n**Ник:** \`${nick}\``);
+      ok.classList.remove('hidden');
+      document.getElementById('becomeUser').value = '';
+      document.getElementById('becomeNick').value = '';
+    } catch (e) {
+      err.classList.remove('hidden');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Отправить';
+    }
+  }
+
+  // --- ВЫВОД: проверка баланса ---
+  async function checkBalance() {
+    const user = document.getElementById('withdrawUser').value.trim();
+    const nick = document.getElementById('withdrawNick').value.trim();
+    const btn = document.getElementById('withdrawCheckBtn');
+    const box = document.getElementById('balanceBox');
+    const err = document.getElementById('withdrawError');
+
+    box.classList.add('hidden');
+    err.classList.add('hidden');
+
+    if (!user || !nick) {
+      alert('Заполни юз и свой ник!');
+      return;
+    }
+
+    const userFinal = user.startsWith('@') ? user : '@' + user;
+
+    btn.disabled = true;
+    btn.textContent = 'Проверка...';
+
+    try {
+      // Отправляем запрос в Discord — там ты вручную проверяешь и вписываешь баланс
+      await sendToDiscord(`💸 **ЗАПРОС БАЛАНСА**\n**Юз:** \`${userFinal}\`\n**Ник:** \`${nick}\``);
+
+      // Показываем заглушку (0 звёзд). Ты вручную меняешь сумму в коде или через админку.
+      document.getElementById('balanceAmount').textContent = '0';
+      box.classList.remove('hidden');
+    } catch (e) {
+      err.classList.remove('hidden');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Проверить баланс';
+    }
+  }
+
+  // --- ВЫВОД: запрос на вывод ---
+  async function requestWithdraw() {
+    const user = document.getElementById('withdrawUser').value.trim();
+    const nick = document.getElementById('withdrawNick').value.trim();
+    const amount = document.getElementById('balanceAmount').textContent;
+    const btn = document.getElementById('withdrawBtn');
+    const ok = document.getElementById('withdrawSuccess');
+
+    ok.classList.add('hidden');
+
+    btn.disabled = true;
+    btn.textContent = 'Отправка...';
+
+    try {
+      await sendToDiscord(`✅ **ЗАЯВКА НА ВЫВОД**\n**Юз:** \`${user}\`\n**Ник:** \`${nick}\`\n**Сумма:** \`${amount} ⭐\``);
+      ok.classList.remove('hidden');
+    } catch (e) {
+      alert('Ошибка отправки. Попробуй ещё раз.');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Запросить вывод';
+    }
+  }
+</script>
+
+</body>
+</html>
